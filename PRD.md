@@ -119,7 +119,7 @@ Forward-only. No skipping, no going back. `cancelled` is reachable from `placed`
 
 Both sides read the same order document. Use Firestore's `onSnapshot` listener so the student's screen updates without a refresh when the vendor advances the status. This live-update behaviour is the single most demo-able thing in the app — put it in the Loom with two browser windows side by side.
 
-**Pickup slots:** 15-minute slots generated from the current time to closing (assume 21:00). Slots less than 15 minutes out are not offered. No capacity limits per slot — out of scope.
+**Pickup slots:** 15-minute slots generated from the current time forward over a rolling 4-hour window. Chhota is open 24 hours, so there is no closing time to count toward and slots roll over midnight. Slots less than 15 minutes out are not offered. No capacity limits per slot — out of scope.
 
 **Order codes:** generated in a Firestore transaction that reads and increments `counters/orders`, so two simultaneous orders can't collide on the same code.
 
