@@ -1,0 +1,19 @@
+rules_version = '2';
+
+// Firestore was created in production mode, which denies everything by default.
+// Paste these rules into Firebase console -> Firestore Database -> Rules -> Publish,
+// otherwise signup fails when it tries to write users/{uid}.
+// Later sessions add rules for menuItems, orders and counters.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{uid} {
+      // Any signed-in user can read a user document. The vendor queue needs to
+      // read student names, and a student needs to read their own role.
+      allow read: if request.auth != null;
+      // You may only create or edit your own user document.
+      allow create, update: if request.auth != null && request.auth.uid == uid;
+      allow delete: if false;
+    }
+  }
+}

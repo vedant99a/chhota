@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    /* Dark only. There is no light mode. */
+    @apply bg-canvas text-text font-sans text-body antialiased;
+  }
+
+  /* Hairline dividers in design.md are 0.5px, which Tailwind has no scale step for. */
+  .hairline {
+    border-bottom: 0.5px solid #2a2d25;
+  }
+}
