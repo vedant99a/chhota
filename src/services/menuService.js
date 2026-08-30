@@ -31,6 +31,19 @@ export function subscribeToVendorItems(vendorId, onItems, onError) {
   );
 }
 
+// The whole menu, live, for the student browse screen. There is one canteen,
+// so students see every item rather than filtering by vendor. Unavailable
+// items are included: the menu greys them out rather than hiding them.
+export function subscribeToMenu(onItems, onError) {
+  return onSnapshot(
+    menuItemsRef,
+    (snapshot) => {
+      onItems(snapshot.docs.map((entry) => ({ id: entry.id, ...entry.data() })));
+    },
+    onError
+  );
+}
+
 // One item, for the edit form. Returns null if it does not exist.
 export async function getMenuItem(id) {
   const snapshot = await getDoc(doc(db, 'menuItems', id));

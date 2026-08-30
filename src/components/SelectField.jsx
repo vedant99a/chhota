@@ -1,5 +1,6 @@
 // Same box as TextField, so the form reads as one set of controls.
-export default function SelectField({ id, label, options, ...rest }) {
+// mono=true for values that are a time or a number.
+export default function SelectField({ id, label, options, mono = false, ...rest }) {
   return (
     <div className="flex flex-col gap-2">
       <label htmlFor={id} className="text-label text-muted">
@@ -7,7 +8,11 @@ export default function SelectField({ id, label, options, ...rest }) {
       </label>
       <select
         id={id}
-        className="h-11 rounded-lg border border-border bg-surface px-3 text-body text-text transition-colors focus:border-accent focus:outline-none"
+        className={[
+          'h-11 rounded-lg border border-border bg-surface px-3 text-body text-text',
+          'transition-colors focus:border-accent focus:outline-none',
+          mono ? 'font-mono' : '',
+        ].join(' ')}
         {...rest}
       >
         {options.map((option) => (

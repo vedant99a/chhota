@@ -4,10 +4,13 @@ import GuestRoute from './components/GuestRoute';
 import ProtectedRoute from './components/ProtectedRoute';
 import RoleHome from './components/RoleHome';
 import VendorRoute from './components/VendorRoute';
+import Cart from './pages/Cart';
 import Login from './pages/Login';
 import ManageItem from './pages/ManageItem';
 import ManageMenu from './pages/ManageMenu';
 import Menu from './pages/Menu';
+import OrderStatus from './pages/OrderStatus';
+import Orders from './pages/Orders';
 import Queue from './pages/Queue';
 import Signup from './pages/Signup';
 
@@ -42,6 +45,9 @@ export default function App() {
       >
         <Route path="/" element={<RoleHome />} />
         <Route path="/menu" element={<Menu />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/order/:id" element={<OrderStatus />} />
         <Route path="/queue" element={<Queue />} />
 
         {/* Vendor only. The Firestore rules are the real guard; this just
