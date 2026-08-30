@@ -1,38 +1,77 @@
-// ─────────────────────────────────────────────────────────────────────────────
-//  NOT THE SOURCE OF TRUTH. DO NOT PASTE THIS INTO THE CONSOLE.
+rules_version = '2';
+
+// Chhota — Firestore security rules.
 //
-//  The rules currently PUBLISHED on chhota-e88e8 are broader than this file:
-//  they cover users, menuItems, orders and counters, and they are stricter on
-//  users than the block below. Publishing this file would DELETE the
-//  menuItems / orders / counters rules and break Session 3 onward.
-//
-//  To edit rules, edit them in the Firebase console. This file is kept only as
-//  a record of what the app relies on, and it needs to be replaced with a copy
-//  of the live rules.
-// ─────────────────────────────────────────────────────────────────────────────
-//
-//  What the live users rules require (reported, worth re-reading in the console
-//  before trusting): a create must be the caller's own uid and must contain
-//  name, email, role and createdAt in the same write, with role either
-//  'student' or 'vendor' and a non-empty name; an update may not change role.
-//
-//  src/services/userService.js satisfies all of this — it writes all four
-//  fields in one setDoc and never updates a user document afterwards. Keep it
-//  that way, or signup starts failing with permission-denied, which looks
-//  identical to "rules were never published".
-//
-//  Session 3 note: read the live menuItems rules before writing menuService.js,
-//  rather than assuming the shape.
-//
-// ─── historical: the users-only block from session 1, superseded ─────────────
-//
-// rules_version = '2';
-// service cloud.firestore {
-//   match /databases/{database}/documents {
-//     match /users/{uid} {
-//       allow read: if request.auth != null;
-//       allow create, update: if request.auth != null && request.auth.uid == uid;
-//       allow delete: if false;
-//     }
-//   }
-// }
+// These rules are the real security boundary. Anything the client can do, a
+// person can do from the browser console, so the route guards in the React app
+// are convenience only and nothing here trusts them.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // The caller's role, read from their own user document. Costs one document
+    // read per rule evaluation that uses it.
+    function myRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isVendor() {
+      return signedIn() && myRole() == 'vendor';
+    }
+
+    function isStudent() {
+      return signedIn() && myRole() == 'student';
+    }
+
+    // users/{uid}
+    // Readable by any signed-in user: the vendor queue shows student names.
+    // Writable only by its owner, and the role is fixed at creation — without
+    // that, a student could promote themselves to vendor from the console.
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+                    && request.auth.uid == uid
+                    && request.resource.data.role in ['student', 'vendor'];
+      allow update: if signedIn()
+                    && request.auth.uid == uid
+                    && request.resource.data.role == resource.data.role;
+      allow delete: if false;
+    }
+
+    // menuItems/{id}
+    // Everyone signed in reads the menu. Only vendors change it.
+    match /menuItems/{itemId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isVendor();
+    }
+
+    // orders/{id}
+    // A student sees only their own orders. A vendor sees all of them, and may
+    // change nothing except the status and its timestamp — so the queue button
+    // cannot be repurposed to rewrite prices, items or totals.
+    // Orders are never deleted: they are the history.
+    match /orders/{orderId} {
+      allow read: if signedIn()
+                  && (resource.data.studentId == request.auth.uid || isVendor());
+      allow create: if isStudent()
+                    && request.resource.data.studentId == request.auth.uid
+                    && request.resource.data.status == 'placed';
+      allow update: if isVendor()
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['status', 'updatedAt']);
+      allow delete: if false;
+    }
+
+    // counters/orders
+    // Read and incremented inside the transaction that places an order, which
+    // is why students need to write it. Not covered by the brief, but order
+    // codes do not work without it.
+    match /counters/{counterId} {
+      allow read: if signedIn();
+      allow write: if isStudent();
+    }
+  }
+}

@@ -13,6 +13,7 @@ import OrderStatus from './pages/OrderStatus';
 import Orders from './pages/Orders';
 import Queue from './pages/Queue';
 import Signup from './pages/Signup';
+import Summary from './pages/Summary';
 
 export default function App() {
   return (
@@ -74,6 +75,14 @@ export default function App() {
           element={
             <VendorRoute>
               <ManageItem />
+            </VendorRoute>
+          }
+        />
+        <Route
+          path="/summary"
+          element={
+            <VendorRoute>
+              <Summary />
             </VendorRoute>
           }
         />

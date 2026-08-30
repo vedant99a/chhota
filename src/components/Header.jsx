@@ -10,6 +10,7 @@ const STUDENT_LINKS = [
 const VENDOR_LINKS = [
   { to: '/queue', label: 'Queue' },
   { to: '/manage', label: 'Menu' },
+  { to: '/summary', label: 'Today' },
 ];
 
 function linkClass({ isActive }) {

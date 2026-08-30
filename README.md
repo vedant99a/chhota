@@ -1,49 +1,153 @@
 # Chhota
 
-Pre-order and pickup for a campus canteen. Students order ahead and watch a live
-status; the vendor works a queue instead of a crowd.
+Pre-order and pickup for a campus canteen. Students order ahead and watch a
+live status; the vendor works a queue instead of a crowd.
 
-Spec: [PRD.md](PRD.md). Design system: [design.md](design.md).
+The problem is not delivery. At peak hours the canteen queue is one
+undifferentiated crowd: students wait without knowing how long, and the vendor
+takes orders and cooks at the same time, so both jobs get done badly. Chhota
+decouples ordering from waiting — place the order from wherever you are, get a
+code, come when it says ready.
 
-## What exists so far
+Full spec in [PRD.md](PRD.md). Design system in [design.md](design.md).
 
-Session 1 only: scaffold and authentication.
+## Stack
 
-- Sign up with name, email, password and a student/vendor role
-- Log in, log out
-- `/` redirects by role — student to `/menu`, vendor to `/queue`
-- `/menu` and `/queue` are placeholders
+| | |
+|---|---|
+| Build | Vite |
+| UI | React 18, React Router v6 |
+| Language | JavaScript (no TypeScript) |
+| Styling | Tailwind CSS, with the design.md tokens as named theme colours |
+| Backend | Firebase v10 — Auth and Firestore only, no Storage |
+| Hosting | Vercel |
 
-## Running it
+## Live
 
-1. Copy the Firebase web config into `.env` (see `.env.example` for the keys).
-2. `npm install`
-3. `npm run dev` and open http://localhost:5173
+<!-- Replace with the deployed Vercel URL -->
+**TODO: live URL**
+
+### Test accounts
+
+<!-- Replace with the demo accounts. See the note below before committing real
+     passwords: this repository is public. -->
+| Role | Email | Password |
+|---|---|---|
+| Student | TODO | TODO |
+| Vendor | TODO | TODO |
+
+> This repository is public. Use throwaway demo accounts here, never a real
+> password you use anywhere else.
+
+## Running it locally
+
+```bash
+git clone https://github.com/vedant99a/chhota.git
+cd chhota
+npm install
+cp .env.example .env   # then fill it in, see below
+npm run dev
+```
+
+Open http://localhost:5173.
 
 If the page is blank and says the config is missing, `.env` is not filled in.
 Vite only reads `.env` at startup, so restart the dev server after editing it.
 
-## Firebase setup
+### Environment variables
 
-- Authentication → Sign-in method → enable **Email/Password**.
-- Firestore → Rules are already published on the project, covering users,
-  menuItems, orders and counters. [firestore.rules](firestore.rules) in this
-  repo is a stale, narrower record — do not paste it into the console, it would
-  delete the menuItems/orders/counters rules. Edit rules in the console.
-- After deploying: Authentication → Settings → Authorized domains → add the
-  deployed domain, or login works locally but not on the live site.
+All six come from Firebase console → Project settings → General → Your apps →
+Web app → SDK setup and configuration. Vite only exposes variables prefixed
+`VITE_`. `.env` is gitignored; `.env.example` is the template.
+
+```
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+```
+
+A Firebase web config is public by design — it identifies the project, it does
+not authorise anything. Firestore rules do the guarding.
+
+### Firebase setup
+
+1. Authentication → Sign-in method → enable **Email/Password**. Nothing else.
+2. Firestore → create the database, then deploy the rules:
+   ```bash
+   npx firebase-tools login
+   npx firebase-tools deploy --only firestore:rules
+   ```
+   The project id is already set in `.firebaserc`.
+3. Deploying anywhere: Authentication → Settings → Authorized domains → add the
+   deployed domain, or login works locally but fails on the live site.
 
 ## Structure
 
 ```
 src/
-  lib/firebase.js       Firebase init, reads VITE_* from .env
-  lib/authErrors.js     Firebase error codes to readable sentences
-  contexts/AuthContext  Current user, their role, loading, logout
-  services/             Every Firestore and Auth call lives here
-  components/           Shared UI and the route guards
-  pages/                One file per screen
+  lib/          firebase init, plus pure helpers with no Firestore in them
+                (pickup slots, the status machine, categories)
+  services/     every Firestore read and write, and nothing else
+  contexts/     AuthContext (user + role), CartContext (cart before checkout)
+  components/   shared UI and the route guards
+  pages/        one file per screen
 ```
 
 The rule that keeps this readable: **no Firestore calls inside components.**
-Components call a service, the service talks to Firebase.
+A component calls a service; the service talks to Firebase.
+
+## Screens
+
+| Route | Who | What |
+|---|---|---|
+| `/signup`, `/login` | anyone | One login screen. The role on the user record decides where you land. |
+| `/menu` | student | Menu grouped by category, add to cart with quantity |
+| `/cart` | student | Line items, quantity steppers, pickup slot, place order |
+| `/order/:id` | student | Live status: order code, progress track, items, total |
+| `/orders` | student | Past orders, newest first |
+| `/queue` | vendor | Open orders oldest-first, one button advancing each |
+| `/manage` | vendor | Full CRUD on menu items, availability toggle, delete confirm |
+| `/summary` | vendor | Orders today, revenue today, count by status |
+
+## Data model
+
+Four collections. See [PRD.md](PRD.md) section 3 for the field lists.
+
+- `users/{uid}` — name, email, role, createdAt
+- `menuItems/{id}` — the core CRUD entity, owned by a vendor
+- `orders/{id}` — items embedded, not referenced
+- `counters/orders` — a single document holding the order number
+
+## Decisions worth explaining
+
+**Order items are embedded in the order, not referenced.** Name and price are
+copied in at order time, so editing a menu item later does not rewrite history.
+A ₹40 Maggi ordered last week stays ₹40 in that order.
+
+**Order codes come from a Firestore transaction.** Placing an order reads and
+increments `counters/orders` and writes the order in one transaction, so two
+students checking out simultaneously cannot collide on `CC-0001`.
+
+**The live status is `onSnapshot`, not polling.** The student's status screen
+and the vendor's queue both hold listeners on the same order document. When the
+vendor advances the status, the student's screen changes with no refresh.
+
+**Rules are the security boundary, not the UI.** The route guards are
+convenience. Anything the client can do, a person can do from the browser
+console, so [firestore.rules](firestore.rules) enforces the real constraints:
+a student cannot advance their own order to `ready`, cannot change their role
+after signup, and cannot read anybody else's orders. A vendor can change an
+order's status and nothing else about it. Orders are never deletable.
+
+**Grouping and sorting happen in JavaScript.** Queries stay single `where`
+clauses so the project needs no composite Firestore indexes.
+
+## Not built, deliberately
+
+Payments (money changes hands at the counter), image uploads (Firebase Storage
+needs billing; categories get a colour block instead), search, notifications,
+multiple vendors, slot capacity limits, and light mode. The app is dark. That
+is the design.
