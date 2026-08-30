@@ -1,19 +1,38 @@
-rules_version = '2';
-
-// Firestore was created in production mode, which denies everything by default.
-// Paste these rules into Firebase console -> Firestore Database -> Rules -> Publish,
-// otherwise signup fails when it tries to write users/{uid}.
-// Later sessions add rules for menuItems, orders and counters.
-service cloud.firestore {
-  match /databases/{database}/documents {
-
-    match /users/{uid} {
-      // Any signed-in user can read a user document. The vendor queue needs to
-      // read student names, and a student needs to read their own role.
-      allow read: if request.auth != null;
-      // You may only create or edit your own user document.
-      allow create, update: if request.auth != null && request.auth.uid == uid;
-      allow delete: if false;
-    }
-  }
-}
+// ─────────────────────────────────────────────────────────────────────────────
+//  NOT THE SOURCE OF TRUTH. DO NOT PASTE THIS INTO THE CONSOLE.
+//
+//  The rules currently PUBLISHED on chhota-e88e8 are broader than this file:
+//  they cover users, menuItems, orders and counters, and they are stricter on
+//  users than the block below. Publishing this file would DELETE the
+//  menuItems / orders / counters rules and break Session 3 onward.
+//
+//  To edit rules, edit them in the Firebase console. This file is kept only as
+//  a record of what the app relies on, and it needs to be replaced with a copy
+//  of the live rules.
+// ─────────────────────────────────────────────────────────────────────────────
+//
+//  What the live users rules require (reported, worth re-reading in the console
+//  before trusting): a create must be the caller's own uid and must contain
+//  name, email, role and createdAt in the same write, with role either
+//  'student' or 'vendor' and a non-empty name; an update may not change role.
+//
+//  src/services/userService.js satisfies all of this — it writes all four
+//  fields in one setDoc and never updates a user document afterwards. Keep it
+//  that way, or signup starts failing with permission-denied, which looks
+//  identical to "rules were never published".
+//
+//  Session 3 note: read the live menuItems rules before writing menuService.js,
+//  rather than assuming the shape.
+//
+// ─── historical: the users-only block from session 1, superseded ─────────────
+//
+// rules_version = '2';
+// service cloud.firestore {
+//   match /databases/{database}/documents {
+//     match /users/{uid} {
+//       allow read: if request.auth != null;
+//       allow create, update: if request.auth != null && request.auth.uid == uid;
+//       allow delete: if false;
+//     }
+//   }
+// }

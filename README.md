@@ -26,9 +26,10 @@ Vite only reads `.env` at startup, so restart the dev server after editing it.
 ## Firebase setup
 
 - Authentication → Sign-in method → enable **Email/Password**.
-- Firestore → Rules → paste [firestore.rules](firestore.rules) and publish.
-  Firestore in production mode denies everything by default, so without this
-  signup fails when it writes `users/{uid}`.
+- Firestore → Rules are already published on the project, covering users,
+  menuItems, orders and counters. [firestore.rules](firestore.rules) in this
+  repo is a stale, narrower record — do not paste it into the console, it would
+  delete the menuItems/orders/counters rules. Edit rules in the console.
 - After deploying: Authentication → Settings → Authorized domains → add the
   deployed domain, or login works locally but not on the live site.
 
