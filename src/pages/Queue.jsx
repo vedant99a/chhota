@@ -72,7 +72,7 @@ export default function Queue() {
               <div className="mt-1 flex items-baseline justify-between gap-3">
                 <span className="text-body">{order.studentName}</span>
                 <span className="shrink-0 font-mono text-price text-muted">
-                  {itemCount} items · {order.pickupSlot}
+                  {itemCount} {itemCount === 1 ? 'item' : 'items'} · {order.pickupSlot}
                 </span>
               </div>
 
