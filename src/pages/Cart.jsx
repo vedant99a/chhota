@@ -101,9 +101,7 @@ export default function Cart() {
           onChange={(event) => setPickupSlot(event.target.value)}
         />
       ) : (
-        <p className="text-body text-muted">
-          No collection slots left today. The canteen closes at 21:00.
-        </p>
+        <p className="text-body text-muted">No collection times available.</p>
       )}
 
       <FormError message={error} />
