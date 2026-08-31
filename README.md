@@ -24,20 +24,22 @@ Full spec in [PRD.md](PRD.md). Design system in [design.md](design.md).
 
 ## Live
 
-<!-- Replace with the deployed Vercel URL -->
-**TODO: live URL**
+**https://chhota.vercel.app**
 
 ### Test accounts
 
-<!-- Replace with the demo accounts. See the note below before committing real
-     passwords: this repository is public. -->
+Throwaway accounts created for review. They hold no real data and are used
+nowhere else.
+
 | Role | Email | Password |
 |---|---|---|
-| Student | TODO | TODO |
-| Vendor | TODO | TODO |
+| Student | `demo.student@chhota.test` | `mica123` |
+| Vendor | `demo.vendor@chhota.test` | `mica123` |
 
-> This repository is public. Use throwaway demo accounts here, never a real
-> password you use anywhere else.
+Sign in at `/login`. One login screen serves both — the role stored on the user
+record decides which home screen renders. To see the live status update, open
+the student in one browser and the vendor in another (or an incognito window):
+Firebase signs one account in per browser profile, so two tabs will not do it.
 
 ## Running it locally
 
