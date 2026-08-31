@@ -32,6 +32,12 @@ export function nextStatus(status) {
   return STATUS_FLOW[index + 1];
 }
 
+// Cancelling is only allowed before the food is ready. Once it is sitting on
+// the counter, the vendor has already spent the ingredients.
+export function canCancel(status) {
+  return status === 'placed' || status === 'preparing';
+}
+
 // An order is open until it is collected or cancelled. Open orders are the
 // ones on the vendor queue.
 export function isOpen(status) {

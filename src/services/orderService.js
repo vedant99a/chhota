@@ -113,6 +113,16 @@ export async function advanceOrder(orderId, currentStatus) {
   return target;
 }
 
+// Cancelling is a sideways move out of the flow, not a step along it, so it is
+// its own function rather than part of advanceOrder. The rules enforce that it
+// is only legal from placed or preparing.
+export async function cancelOrder(orderId) {
+  await updateDoc(doc(db, 'orders', orderId), {
+    status: 'cancelled',
+    updatedAt: serverTimestamp(),
+  });
+}
+
 // createdAt is null for a moment after placing an order, while the write is
 // still pending on the server. Treat those as newest.
 function createdAtMillis(order) {

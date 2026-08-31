@@ -53,6 +53,21 @@ service cloud.firestore {
     // change nothing except the status and its timestamp — so the queue button
     // cannot be repurposed to rewrite prices, items or totals.
     // Orders are never deleted: they are the history.
+    //
+    // The status machine is enforced here, not just in the UI. Forward only,
+    // no skipping and no going back; cancelling is allowed only before the
+    // food is ready; collected and cancelled are terminal.
+    //
+    //   placed    -> preparing | cancelled
+    //   preparing -> ready     | cancelled
+    //   ready     -> collected
+    //
+    function legalTransition(from, to) {
+      return (from == 'placed' && (to == 'preparing' || to == 'cancelled'))
+          || (from == 'preparing' && (to == 'ready' || to == 'cancelled'))
+          || (from == 'ready' && to == 'collected');
+    }
+
     match /orders/{orderId} {
       allow read: if signedIn()
                   && (resource.data.studentId == request.auth.uid || isVendor());
@@ -61,7 +76,8 @@ service cloud.firestore {
                     && request.resource.data.status == 'placed';
       allow update: if isVendor()
                     && request.resource.data.diff(resource.data).affectedKeys()
-                         .hasOnly(['status', 'updatedAt']);
+                         .hasOnly(['status', 'updatedAt'])
+                    && legalTransition(resource.data.status, request.resource.data.status);
       allow delete: if false;
     }
 
