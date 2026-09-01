@@ -30,8 +30,18 @@ export function AuthProvider({ children }) {
     // Fires once on load and again on every login and logout.
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
-      await loadProfile(firebaseUser ? firebaseUser.uid : null);
-      setLoading(false);
+      try {
+        await loadProfile(firebaseUser ? firebaseUser.uid : null);
+      } catch {
+        // Firestore can be unreachable — offline, or a content blocker sitting
+        // on firestore.googleapis.com. Signing in still worked; we just do not
+        // know the role. Carry on without one rather than hanging.
+        setProfile(null);
+      } finally {
+        // This must run on every path. Leaving loading true renders the
+        // "Loading" screen for ever with nothing to act on.
+        setLoading(false);
+      }
     });
     return unsubscribe;
   }, [loadProfile]);
