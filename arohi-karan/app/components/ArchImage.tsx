@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { hasAsset } from '../assets'
+import { assetUrl, hasAsset } from '../assets'
 
 type Props = {
   src: string
@@ -71,7 +71,7 @@ export default function ArchImage({
   return (
     <div className={`arch graded ${className}`} style={shared}>
       <Image
-        src={src}
+        src={assetUrl(src)}
         alt={alt}
         fill
         sizes={sizes}

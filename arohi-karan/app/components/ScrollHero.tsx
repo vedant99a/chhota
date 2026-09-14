@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
-import { hasAsset } from '../assets'
+import { assetUrl, hasAsset } from '../assets'
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const
 const HERO = '/assets/hero.jpg'
@@ -156,14 +156,14 @@ export default function ScrollHero() {
         {hasAsset(COLUMN) && (
           <>
             <img
-              src={COLUMN}
+              src={assetUrl(COLUMN)}
               alt=""
               aria-hidden="true"
               className="ornament"
               style={{ position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)', height: '78svh', opacity: 0.5 }}
             />
             <img
-              src={COLUMN}
+              src={assetUrl(COLUMN)}
               alt=""
               aria-hidden="true"
               className="ornament"
@@ -210,7 +210,7 @@ export default function ScrollHero() {
               <div className="graded" style={{ position: 'absolute', inset: 0 }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={HERO}
+                  src={assetUrl(HERO)}
                   alt="A sunlit palace courtyard with a marble fountain and strung garlands"
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
@@ -382,7 +382,7 @@ export default function ScrollHero() {
 function Monogram() {
   if (hasAsset('/assets/logo.png')) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src="/assets/logo.png" alt="The A K monogram" style={{ height: 120, width: 'auto', margin: '0 auto' }} />
+    return <img src={assetUrl('/assets/logo.png')} alt="The A K monogram" style={{ height: 120, width: 'auto', margin: '0 auto' }} />
   }
   // PLACEHOLDER: assets/logo.png is absent, so the mark is set in type.
   return (

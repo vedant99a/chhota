@@ -1,6 +1,6 @@
 import Section, { Reveal } from './Section'
 import ArchImage from './ArchImage'
-import { hasAsset } from '../assets'
+import { assetUrl, hasAsset } from '../assets'
 
 const CREST = '/assets/ornament/crest.png'
 
@@ -25,7 +25,7 @@ export default function Families() {
 
           <div style={{ display: 'grid', placeItems: 'center' }} aria-hidden="true">
             {hasAsset(CREST) ? (
-              <img src={CREST} alt="" className="ornament" style={{ width: 90 }} />
+              <img src={assetUrl(CREST)} alt="" className="ornament" style={{ width: 90 }} />
             ) : (
               <span style={{ display: 'block', width: 1, height: 80, background: 'var(--border)' }} />
             )}

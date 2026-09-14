@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Section, { Reveal } from './Section'
 import { COUNTDOWN_TARGET } from '../data'
-import { hasAsset } from '../assets'
+import { assetUrl, hasAsset } from '../assets'
 
 const TARGET = new Date(COUNTDOWN_TARGET).getTime()
 const COLUMN = '/assets/ornament/floral-column.png'
@@ -35,9 +35,9 @@ export default function Countdown() {
     <Section style={{ position: 'relative', padding: '7rem 1.5rem', textAlign: 'center' }}>
       {hasAsset(COLUMN) && (
         <>
-          <img src={COLUMN} alt="" aria-hidden="true" className="ornament"
+          <img src={assetUrl(COLUMN)} alt="" aria-hidden="true" className="ornament"
             style={{ position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)', height: '60%', opacity: 0.45 }} />
-          <img src={COLUMN} alt="" aria-hidden="true" className="ornament"
+          <img src={assetUrl(COLUMN)} alt="" aria-hidden="true" className="ornament"
             style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%) scaleX(-1)', height: '60%', opacity: 0.45 }} />
         </>
       )}

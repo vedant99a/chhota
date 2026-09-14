@@ -1,5 +1,5 @@
 import Section, { Reveal } from './Section'
-import { hasAsset } from '../assets'
+import { assetUrl, hasAsset } from '../assets'
 
 const CLOSING = '/assets/closing.jpg'
 const PEACOCK = '/assets/ornament/peacock.png'
@@ -10,7 +10,7 @@ export default function Closing() {
       {hasAsset(CLOSING) && (
         <div className="graded" style={{ position: 'absolute', inset: 0, opacity: 0.28 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={CLOSING} alt="" aria-hidden="true" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src={assetUrl(CLOSING)} alt="" aria-hidden="true" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
       )}
       {/* Ivory scrim keeps the copy readable over the facade. */}
@@ -18,7 +18,7 @@ export default function Closing() {
 
       {hasAsset(PEACOCK) && (
         <img
-          src={PEACOCK}
+          src={assetUrl(PEACOCK)}
           alt=""
           aria-hidden="true"
           className="ornament"

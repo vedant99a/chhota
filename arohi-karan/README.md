@@ -61,10 +61,17 @@ shows its error state rather than pretending to succeed.
 **2. Imagery.** All thirteen stills were generated and sit in the Runway
 library at app.runwayml.com, ready to download. They could not be written into
 this repo directly: Runway's CDN is blocked by the egress policy of the
-environment this was built in. Download them there, save them under
-`public/assets/...` using the filenames below, and add each path to
-`AVAILABLE_ASSETS` in `app/assets.ts`. That is the only wiring needed, and
-every placeholder is already the right shape so nothing shifts.
+environment this was built in. Download them there and save them under `public/assets/...` using the names
+below. That is the whole job: `app/assets.ts` is regenerated from the folder on
+every build, so there is no list to edit. The extension does not have to match
+either, because lookups ignore it. Runway serves PNG, so `hero.png` satisfies
+the `hero.jpg` slot without renaming. Every placeholder is already the right
+shape, so nothing shifts when the files land.
+
+Why they are not already here: the environment this was built in denies
+outbound connections to almost every host, Runway's CDN and Unsplash included,
+so the container could not fetch them. Nothing about the files themselves is
+the problem.
 
 | File | Ratio | Status |
 |---|---|---|
