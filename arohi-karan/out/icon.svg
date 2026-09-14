@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" fill="#FBF6EC"/>
-  <path d="M32 8 C22 8 14 16 14 26 L14 56 L50 56 L50 26 C50 16 42 8 32 8 Z" fill="none" stroke="#B08D4F" stroke-width="3"/>
-  <text x="32" y="41" font-family="Georgia, serif" font-size="22" fill="#7F653D" text-anchor="middle">AK</text>
-</svg>
