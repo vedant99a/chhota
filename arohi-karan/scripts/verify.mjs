@@ -155,6 +155,34 @@ for (const [sel, n] of targets) {
   check(rMed >= 4.5, `hero "${s.text}"`, `median ${rMed.toFixed(2)}:1, p95-lightest ${rP95.toFixed(2)}:1, colour ${s.color}`)
 }
 
+// ---------- 4. readable with no JavaScript ----------
+// Framer Motion renders its `initial` state into the server markup, so without
+// the noscript override every revealed block stays at opacity 0 and the page
+// below the hero is blank. Phone attachment previews do not run scripts.
+const noJs = await browser.newContext({ viewport: { width: 390, height: 844 }, javaScriptEnabled: false })
+const np = await noJs.newPage()
+await np.goto(URL, { waitUntil: 'load' })
+await np.waitForTimeout(600)
+const readable = await np.evaluate(() => {
+  const visible = (el) => {
+    const cs = getComputedStyle(el)
+    const r = el.getBoundingClientRect()
+    return Number(cs.opacity) > 0.9 && cs.visibility !== 'hidden' && cs.display !== 'none' && r.height > 0
+  }
+  const wanted = ['How We Got Here', 'The Raj Palace, Jaipur', 'What to wear', 'Two families']
+  const found = wanted.map((t) => {
+    const el = [...document.querySelectorAll('h2, h3, p')].find((e) => e.textContent.trim().startsWith(t))
+    return { t, present: !!el, visible: el ? visible(el) : false }
+  })
+  const hidden = [...document.querySelectorAll('[data-reveal]')].filter((e) => Number(getComputedStyle(e).opacity) < 0.9)
+  return { found, revealsStillHidden: hidden.length, totalReveals: document.querySelectorAll('[data-reveal]').length }
+})
+const allReadable = readable.found.every((f) => f.present && f.visible) && readable.revealsStillHidden === 0
+check(allReadable, 'page is readable with JavaScript disabled',
+  `${readable.totalReveals} revealed blocks, ${readable.revealsStillHidden} still hidden` +
+  (allReadable ? '' : ' | ' + readable.found.filter(f => !f.visible).map(f => f.t).join(', ')))
+await noJs.close()
+
 await ctx.close()
 await browser.close()
 log(`\n${failures === 0 ? 'ALL CHECKS PASSED' : failures + ' CHECK(S) FAILED'}`)

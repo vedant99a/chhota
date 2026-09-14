@@ -179,6 +179,7 @@ export default function ScrollHero({ hero, column, logo }: HeroAssets) {
         {/* The arch window. Laid out full bleed, scaled down at progress 0. */}
         <div
           ref={archRef}
+            data-hero-arch=""
           className="arch"
           style={{
             position: 'absolute',
@@ -197,6 +198,7 @@ export default function ScrollHero({ hero, column, logo }: HeroAssets) {
         >
           <div
             ref={stageRef}
+            data-hero-stage=""
             style={{
               position: 'absolute',
               left: '50%',
@@ -247,6 +249,7 @@ export default function ScrollHero({ hero, column, logo }: HeroAssets) {
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
           <div
             ref={backdropRef}
+            data-hero-backdrop=""
             aria-hidden="true"
             style={{
               position: 'absolute',
@@ -261,6 +264,7 @@ export default function ScrollHero({ hero, column, logo }: HeroAssets) {
               from the scroll linked wrapper below it. */}
           <div
             ref={identityRef}
+            data-hero-identity=""
             style={{
               position: 'absolute',
               inset: 0,
@@ -319,6 +323,7 @@ export default function ScrollHero({ hero, column, logo }: HeroAssets) {
           {/* Closing beat. Holds at full opacity to the end of the range. */}
           <div
             ref={beat3Ref}
+            data-hero-final=""
             style={{
               position: 'absolute',
               inset: 0,
@@ -400,6 +405,7 @@ function Monogram({ logo }: { logo: string | null }) {
 const Beat = ({ ref, children }: { ref: React.Ref<HTMLDivElement>; children: React.ReactNode }) => (
   <div
     ref={ref}
+    data-hero-beat=""
     style={{
       position: 'absolute',
       inset: 0,

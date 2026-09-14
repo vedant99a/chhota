@@ -53,6 +53,7 @@ export function Reveal({
   const Tag = motion[as]
   return (
     <Tag
+      data-reveal=""
       className={className}
       style={style}
       variants={{

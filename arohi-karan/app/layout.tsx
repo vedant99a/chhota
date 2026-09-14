@@ -72,6 +72,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </clipPath>
           </defs>
         </svg>
+        {/* Framer Motion renders its `initial` state into the server markup, so
+            without JavaScript every revealed block stays at opacity 0 and the
+            whole page below the hero is blank. Phone attachment previews
+            (WhatsApp, Gmail, Files) do not run scripts, so the page has to be
+            readable without them. Raw HTML, because React hoists a JSX <style>
+            out of <noscript> and it would then apply always. */}
+        <noscript
+          dangerouslySetInnerHTML={{
+            __html: `<style>
+              [data-reveal]{opacity:1!important;transform:none!important}
+              .hero-container{height:100svh!important}
+              [data-hero-arch]{transform:translate(-50%,-50%)!important}
+              [data-hero-stage]{transform:none!important}
+              [data-hero-identity]{opacity:1!important;transform:none!important}
+              [data-hero-beat],[data-hero-final],[data-hero-backdrop]{display:none!important}
+              .sticky-rsvp{display:none!important}
+            </style>`,
+          }}
+        />
         {children}
       </body>
     </html>

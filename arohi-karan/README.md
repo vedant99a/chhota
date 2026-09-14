@@ -25,11 +25,26 @@ npm run bundle:review     # arohi-and-karan-review.html, with a "what is not
 npm run bundle            # same page, no header
 ```
 
-Produces one self-contained `.html`, around 1.7 MB, with every stylesheet,
-script and font inlined as data URIs. It opens straight from a phone, an email
-attachment or a USB stick with no server and no network. The scroll driven arch,
-the live countdown and the form all work offline. The Google map is the one
+Produces one self-contained `.html`, around 3.6 MB, with every stylesheet,
+script, font and image inlined as data URIs. It opens straight from a phone, an
+email attachment or a USB stick with no server and no network. The scroll driven
+arch, the live countdown and the form all work offline. The Google map is the one
 exception: that iframe needs a connection.
+
+Three things keep it phone-sized. Images are WebP rather than JPEG, which is
+about 40% smaller at the same quality. The bundler drops the 22 `@font-face`
+blocks covering Cyrillic, Vietnamese and Latin-Extended, keeping only basic
+Latin: a browser never downloads unused subsets, but this bundle inlines
+everything it can see. And `app/assets.ts` is generated, so it is gitignored,
+because `bundle` writes a 1.2 MB data URI version of it that must never be
+committed.
+
+**The page must stay readable with JavaScript disabled.** Phone attachment
+previews in WhatsApp, Gmail and Files do not run scripts. Framer Motion renders
+its `initial` state into the server markup, so without the `<noscript>` override
+in `app/layout.tsx` every revealed block sits at `opacity: 0` and the entire
+page below the hero is blank. `npm run verify` asserts this; it fails with
+"39 revealed blocks, 39 still hidden" if the override is removed.
 
 The header only appears when `NEXT_PUBLIC_REVIEW_BANNER` is set at build time,
 so it can never reach a real deployment.

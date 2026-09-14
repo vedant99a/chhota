@@ -29,6 +29,7 @@ const dataUri = (url) => {
 let html = readFileSync(join(OUT, 'index.html'), 'utf8')
 let inlinedCss = 0, inlinedJs = 0, inlinedFonts = 0, missing = []
 const processedCss = new Map()
+let droppedFaces = 0
 
 // 1. Stylesheets, with their font files folded in as data URIs.
 html = html.replace(/<link[^>]*rel="stylesheet"[^>]*>/g, (tag) => {
@@ -36,6 +37,20 @@ html = html.replace(/<link[^>]*rel="stylesheet"[^>]*>/g, (tag) => {
   if (!href || !local(href)) return tag
   let css = read(href)?.toString('utf8')
   if (css == null) { missing.push(href); return '' }
+
+  // next/font emits a @font-face per weight PER unicode subset: Cyrillic,
+  // Cyrillic-ext, Vietnamese, Latin-ext and Latin. A browser only fetches the
+  // subsets it needs, so on a served page the extras are free, but this bundle
+  // inlines every file it can see. The copy is English, so keep only the block
+  // whose unicode-range covers basic Latin (which also carries the punctuation
+  // and accented characters used here) and drop the other 24 files.
+  const before = (css.match(/@font-face/g) || []).length
+  css = css.replace(/@font-face\s*\{[^}]*\}/g, (block) => {
+    const range = block.match(/unicode-range:\s*([^;}]+)/i)
+    if (!range) return block
+    return /u\+00(\?\?|0{0,2}0)/i.test(range[1]) ? block : ''
+  })
+  droppedFaces += before - (css.match(/@font-face/g) || []).length
   css = css.replace(/url\(([^)]+)\)/g, (m, raw) => {
     const url = raw.trim().replace(/^['"]|['"]$/g, '')
     if (!local(url)) return m
@@ -90,7 +105,8 @@ html = html.replace(
 writeFileSync(DEST, html)
 const kb = (Buffer.byteLength(html) / 1024).toFixed(0)
 console.log(`${DEST}  ${kb} kB`)
-console.log(`inlined: ${inlinedCss} stylesheet(s), ${inlinedJs} script(s), ${inlinedFonts} font file(s)`)
+console.log(`inlined: ${inlinedCss} stylesheet(s), ${inlinedJs} script(s), ${inlinedFonts} font file(s)` +
+  (droppedFaces ? `; dropped ${droppedFaces} non-Latin @font-face block(s)` : ''))
 if (missing.length) console.log('MISSING:', [...new Set(missing)].join(', '))
 const left = html.match(/\/_next\/static\/[A-Za-z0-9/_.-]+/g)
 console.log(left ? `WARNING: ${left.length} unresolved local reference(s): ${[...new Set(left)].slice(0,5).join(', ')}` : 'no unresolved local references')
