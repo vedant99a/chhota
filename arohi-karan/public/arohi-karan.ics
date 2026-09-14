@@ -1,0 +1,17 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Arohi and Karan//Wedding//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:arohi-karan-2027@rajpalace.jaipur
+DTSTAMP:20260101T000000Z
+DTSTART;VALUE=DATE:20270202
+DTEND;VALUE=DATE:20270205
+SUMMARY:Arohi & Karan · Jaipur
+DESCRIPTION:Celebrations on Tuesday 2 and Wednesday 3 February 2027. Checkout Thursday 4 February.
+LOCATION:The Raj Palace\, Jorawer Singh Gate\, Amer Road\, Jaipur 302002\, Rajasthan\, India
+GEO:26.9356705;75.8341016
+URL:https://rajpalace.com
+END:VEVENT
+END:VCALENDAR
