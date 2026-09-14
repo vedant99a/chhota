@@ -17,6 +17,23 @@ npm run dev          # http://localhost:3000
 npm run build && npm start
 ```
 
+## A single file you can send
+
+```
+npm run bundle:review     # arohi-and-karan-review.html, with a "what is not
+                          # finished yet" header for reviewers
+npm run bundle            # same page, no header
+```
+
+Produces one self-contained `.html`, around 1.7 MB, with every stylesheet,
+script and font inlined as data URIs. It opens straight from a phone, an email
+attachment or a USB stick with no server and no network. The scroll driven arch,
+the live countdown and the form all work offline. The Google map is the one
+exception: that iframe needs a connection.
+
+The header only appears when `NEXT_PUBLIC_REVIEW_BANNER` is set at build time,
+so it can never reach a real deployment.
+
 ## Verify
 
 Three Playwright suites cover the Step 9 checklist. Start the server, then:

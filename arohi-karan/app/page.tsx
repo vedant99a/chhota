@@ -1,3 +1,4 @@
+import ReviewBanner from './components/ReviewBanner'
 import ScrollHero from './components/ScrollHero'
 import StickyRsvp from './components/StickyRsvp'
 import Countdown from './components/Countdown'
@@ -15,6 +16,7 @@ import Closing from './components/Closing'
 export default function Page() {
   return (
     <main style={{ background: 'var(--ivory)' }}>
+      <ReviewBanner />
       <ScrollHero />
       <StickyRsvp />
       <Countdown />

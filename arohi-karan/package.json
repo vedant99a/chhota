@@ -9,7 +9,9 @@
     "typecheck": "tsc --noEmit",
     "verify": "node scripts/verify.mjs",
     "verify:scroll": "node scripts/scroll.mjs",
-    "verify:form": "node scripts/form.mjs"
+    "verify:form": "node scripts/form.mjs",
+    "bundle": "STATIC_EXPORT=1 next build && node scripts/bundle.mjs",
+    "bundle:review": "NEXT_PUBLIC_REVIEW_BANNER=1 STATIC_EXPORT=1 next build && node scripts/bundle.mjs arohi-and-karan-review.html"
   },
   "dependencies": {
     "next": "^15.5.0",
