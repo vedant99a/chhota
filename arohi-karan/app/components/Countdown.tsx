@@ -3,10 +3,8 @@
 import { useEffect, useState } from 'react'
 import Section, { Reveal } from './Section'
 import { COUNTDOWN_TARGET } from '../data'
-import { assetUrl, hasAsset } from '../assets'
 
 const TARGET = new Date(COUNTDOWN_TARGET).getTime()
-const COLUMN = '/assets/ornament/floral-column.png'
 
 const units = ['Days', 'Hours', 'Minutes', 'Seconds'] as const
 
@@ -20,7 +18,7 @@ function remaining() {
   ]
 }
 
-export default function Countdown() {
+export default function Countdown({ column }: { column: string | null }) {
   // Null until the first client tick, so SSR and first paint both render
   // middle dots and there is no hydration mismatch.
   const [values, setValues] = useState<number[] | null>(null)
@@ -33,11 +31,11 @@ export default function Countdown() {
 
   return (
     <Section style={{ position: 'relative', padding: '7rem 1.5rem', textAlign: 'center' }}>
-      {hasAsset(COLUMN) && (
+      {column && (
         <>
-          <img src={assetUrl(COLUMN)} alt="" aria-hidden="true" className="ornament"
+          <img src={column} alt="" aria-hidden="true" className="ornament"
             style={{ position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)', height: '60%', opacity: 0.45 }} />
-          <img src={assetUrl(COLUMN)} alt="" aria-hidden="true" className="ornament"
+          <img src={column} alt="" aria-hidden="true" className="ornament"
             style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%) scaleX(-1)', height: '60%', opacity: 0.45 }} />
         </>
       )}

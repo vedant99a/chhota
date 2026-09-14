@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import { assetUrl, hasAsset } from '../assets'
 
 type Props = {
@@ -6,7 +5,7 @@ type Props = {
   alt: string
   /** width / height, e.g. 3/4. Drives the reserved box. */
   ratio?: number
-  /** next/image sizes hint. Mobile caps at 900px for everything but the hero. */
+  /** Retained for call sites; each slot ships one correctly sized file. */
   sizes?: string
   priority?: boolean
   caption?: string
@@ -68,16 +67,19 @@ export default function ArchImage({
     )
   }
 
+  // A plain <img> rather than next/image: every asset is pre-sized to exactly
+  // what this slot renders, so there is no srcset to pick from. next/image
+  // emits src plus a srcset naming the same file twice, which in the single
+  // file build embeds each photograph three times over as base64.
   return (
     <div className={`arch graded ${className}`} style={shared}>
-      <Image
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         src={assetUrl(src)}
         alt={alt}
-        fill
-        sizes={sizes}
-        priority={priority}
-        loading={priority ? undefined : 'lazy'}
-        style={{ objectFit: 'cover' }}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
       />
     </div>
   )

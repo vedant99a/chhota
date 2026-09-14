@@ -2,11 +2,15 @@
 
 import { motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
-import { assetUrl, hasAsset } from '../assets'
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const
-const HERO = '/assets/hero.jpg'
-const COLUMN = '/assets/ornament/floral-column.png'
+
+/**
+ * Image urls arrive as props, already resolved by the server. Importing the
+ * asset map here would pull every image into the client bundle, and in the
+ * single file build that means a second full base64 copy of all thirteen.
+ */
+export type HeroAssets = { hero: string | null; column: string | null; logo: string | null }
 
 const clamp = (n: number, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, n))
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
@@ -18,7 +22,7 @@ const ramp = (p: number, from: number, to: number) => clamp((p - from) / (to - f
 const BASE_W_VW = 132
 const BASE_H_SVH = 128
 
-export default function ScrollHero() {
+export default function ScrollHero({ hero, column, logo }: HeroAssets) {
   const containerRef = useRef<HTMLDivElement>(null)
   const archRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
@@ -153,17 +157,17 @@ export default function ScrollHero() {
         }}
       >
         {/* Botanical columns either side of the arch, desktop only. */}
-        {hasAsset(COLUMN) && (
+        {column && (
           <>
             <img
-              src={assetUrl(COLUMN)}
+              src={column}
               alt=""
               aria-hidden="true"
               className="ornament"
               style={{ position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)', height: '78svh', opacity: 0.5 }}
             />
             <img
-              src={assetUrl(COLUMN)}
+              src={column}
               alt=""
               aria-hidden="true"
               className="ornament"
@@ -206,11 +210,11 @@ export default function ScrollHero() {
               willChange: 'transform',
             }}
           >
-            {hasAsset(HERO) ? (
+            {hero ? (
               <div className="graded" style={{ position: 'absolute', inset: 0 }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={assetUrl(HERO)}
+                  src={hero}
                   alt="A sunlit palace courtyard with a marble fountain and strung garlands"
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
@@ -233,8 +237,7 @@ export default function ScrollHero() {
               style={{
                 position: 'absolute',
                 inset: 0,
-                background:
-                  'linear-gradient(to top, rgba(59,46,35,0.92) 0%, rgba(59,46,35,0.82) 52%, rgba(59,46,35,0.75) 100%)',
+                background: 'var(--hero-scrim)',
               }}
             />
           </div>
@@ -271,7 +274,7 @@ export default function ScrollHero() {
               {/* Monogram and wordmark are separate stacked blocks. Neither is
                   positioned over the other, and the gap below is real. */}
               <motion.div {...rise(24, 1.1, 0.05)} style={{ marginBottom: '2.5rem' }}>
-                <Monogram />
+                <Monogram logo={logo} />
               </motion.div>
 
               <motion.h1
@@ -379,10 +382,10 @@ export default function ScrollHero() {
   )
 }
 
-function Monogram() {
-  if (hasAsset('/assets/logo.png')) {
+function Monogram({ logo }: { logo: string | null }) {
+  if (logo) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={assetUrl('/assets/logo.png')} alt="The A K monogram" style={{ height: 120, width: 'auto', margin: '0 auto' }} />
+    return <img src={logo} alt="The A K monogram" style={{ height: 120, width: 'auto', margin: '0 auto' }} />
   }
   // PLACEHOLDER: assets/logo.png is absent, so the mark is set in type.
   return (

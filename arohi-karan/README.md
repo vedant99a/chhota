@@ -58,54 +58,29 @@ line's computed colour.
 Create a form at formspree.io and set it in `.env.local`. Without it the form
 shows its error state rather than pretending to succeed.
 
-**2. Imagery.** All thirteen stills were generated and sit in the Runway
-library at app.runwayml.com, ready to download. They could not be written into
-this repo directly: Runway's CDN is blocked by the egress policy of the
-environment this was built in. Download them there and save them under `public/assets/...` using the names
-below. That is the whole job: `app/assets.ts` is regenerated from the folder on
-every build, so there is no list to edit. The extension does not have to match
-either, because lookups ignore it. Runway serves PNG, so `hero.png` satisfies
-the `hero.jpg` slot without renaming. Every placeholder is already the right
-shape, so nothing shifts when the files land.
+**2. Imagery is in.** All thirteen generated stills are cropped, downscaled and
+in `public/assets`. `app/assets.ts` is regenerated from that folder on every
+build, and lookups ignore the file extension, so replacing any image is a matter
+of dropping the new file in.
 
-Why they are not already here: the environment this was built in denies
-outbound connections to almost every host, Runway's CDN and Unsplash included,
-so the container could not fetch them. Nothing about the files themselves is
-the problem.
+Two ornaments needed work before they would composite. Both use
+`mix-blend-mode: multiply`, where pure white is a no-op but cream is not:
 
-| File | Ratio | Status |
-|---|---|---|
-| `assets/hero.jpg` | 3:4 | Ready. Open courtyard, no arch in the image |
-| `assets/events/haldi.jpg` | 3:4 | Ready |
-| `assets/events/welcome-dinner.jpg` | 3:4 | Ready |
-| `assets/events/sehrabandi.jpg` | 3:4 | Ready |
-| `assets/events/baraat.jpg` | 3:4 | Ready |
-| `assets/events/pheras.jpg` | 3:4 | Ready |
-| `assets/events/soiree.jpg` | 3:4 | Ready |
-| `assets/stay.jpg` | 4:3 | Ready |
-| `assets/travel.jpg` | 4:3 | Ready |
-| `assets/closing.jpg` | 16:9 | Ready |
-| `assets/ornament/crest.png` | 1:1 | Usable. Carries an off centre dusty rose wash behind the gold crest |
-| `assets/ornament/peacock.png` | 1:1 | **Crop before use.** Trim the grey margin so only the cream sheet remains |
-| `assets/ornament/floral-column.png` | 9:16 | **Crop before use.** Keep only the central vertical floral band, roughly the middle fifth of the width; discard the taupe panel border |
+- `ornament/peacock.jpg` was a cream sheet photographed on grey. Cropped to the
+  sheet, detected at 114,90 to 966,994, with a further 12px inset so no fringe
+  survives.
+- `ornament/floral-column.jpg` comes from the page-border generation, not the
+  one prompted as a band. The band version put its flowers on taupe, which
+  multiply cannot hide; the page border put them on cream, and its left edge
+  inside the ruled frame is exactly the vertical column this needs.
 
-The two ornament crops matter because both are composited with
-`mix-blend-mode: multiply`. Cream multiplies away invisibly over the ivory
-page; the grey margin and the taupe border would not, and would show as the
-grey box edge to watch for. Each is a few seconds of work in any image editor.
+All three ornaments then had their white point stretched per channel so the
+paper reads as 255 and disappears under multiply. Without it the crest showed
+as a visible pale square against the ivory page.
 
-Two generation notes, in case you re-roll anything. First, negative
-instructions do not work on this model: "do not include an archway" produced a
-large foreground archway, and "no frame, no scenery" produced a framed plate
-three times out of three. Describe what you want present instead, and describe
-the camera position rather than negating the object. Second, the ornament
-prompts are the ones that need this most, because the model's prior for
-"botanical plate" is a framed antique print.
-
-Still missing entirely: `assets/logo.png` (the A K monogram, currently set in
-type), three `assets/couple/*.jpg` and two `assets/families/*.jpg`. Those are
-deliberate. The brief forbids generating Arohi, Karan or any family member, so
-they need real photographs.
+Still missing, deliberately: `logo.png` (the A K monogram, currently set in
+type), three `couple/*.jpg` and two `families/*.jpg`. The brief forbids
+generating Arohi, Karan or any family member, so those need real photographs.
 
 **3. Copy awaiting the couple's own words.** The three story beats in
 `app/components/OurStory.tsx` (`I. How We Met`, `II. The Question`,

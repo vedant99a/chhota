@@ -8,7 +8,21 @@
  *
  * To add an image: drop it into public/assets and rebuild.
  */
-const BY_STEM: Record<string, string> = {}
+const BY_STEM: Record<string, string> = {
+  "/assets/closing": "/assets/closing.jpg",
+  "/assets/events/baraat": "/assets/events/baraat.jpg",
+  "/assets/events/haldi": "/assets/events/haldi.jpg",
+  "/assets/events/pheras": "/assets/events/pheras.jpg",
+  "/assets/events/sehrabandi": "/assets/events/sehrabandi.jpg",
+  "/assets/events/soiree": "/assets/events/soiree.jpg",
+  "/assets/events/welcome-dinner": "/assets/events/welcome-dinner.jpg",
+  "/assets/hero": "/assets/hero.jpg",
+  "/assets/ornament/crest": "/assets/ornament/crest.jpg",
+  "/assets/ornament/floral-column": "/assets/ornament/floral-column.jpg",
+  "/assets/ornament/peacock": "/assets/ornament/peacock.jpg",
+  "/assets/stay": "/assets/stay.jpg",
+  "/assets/travel": "/assets/travel.jpg"
+}
 
 const stem = (src: string) => src.replace(/\.[^./]+$/, '')
 

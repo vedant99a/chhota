@@ -1,3 +1,4 @@
+import { assetUrl, hasAsset } from './assets'
 import ReviewBanner from './components/ReviewBanner'
 import ScrollHero from './components/ScrollHero'
 import StickyRsvp from './components/StickyRsvp'
@@ -13,13 +14,17 @@ import Wardrobe from './components/Wardrobe'
 import Rsvp from './components/Rsvp'
 import Closing from './components/Closing'
 
+const resolve = (src: string) => (hasAsset(src) ? assetUrl(src) : null)
+
 export default function Page() {
+  const column = resolve('/assets/ornament/floral-column.png')
+
   return (
     <main style={{ background: 'var(--ivory)' }}>
       <ReviewBanner />
-      <ScrollHero />
+      <ScrollHero hero={resolve('/assets/hero.jpg')} column={column} logo={resolve('/assets/logo.png')} />
       <StickyRsvp />
-      <Countdown />
+      <Countdown column={column} />
       <OurStory />
       <Families />
       <Celebrations />

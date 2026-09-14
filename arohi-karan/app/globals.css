@@ -28,6 +28,17 @@ a { color: inherit; text-decoration: none; }
   --peacock:    #1F5A5E;
   --border:     rgba(176, 141, 79, 0.28);
 
+  /* Hero scrim. Tuned against the real photograph by measuring contrast on the
+     rendered composite, not estimated: see scripts/verify.mjs. The brief's
+     0.72/0.34/0.12 measures 4.25:1 on the names and 2.7:1 where a bright patch
+     of the courtyard sits behind a line, so it is too light for this image. */
+  --hero-scrim: linear-gradient(
+    to top,
+    rgba(59, 46, 35, 0.86) 0%,
+    rgba(59, 46, 35, 0.65) 52%,
+    rgba(59, 46, 35, 0.51) 100%
+  );
+
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --measure: 62ch;
 }
