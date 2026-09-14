@@ -41,34 +41,47 @@ line's computed colour.
 Create a form at formspree.io and set it in `.env.local`. Without it the form
 shows its error state rather than pretending to succeed.
 
-**2. Imagery.** No asset files exist yet. Every image renders a marked
-placeholder of the correct shape, so nothing shifts when the real files land.
-Drop a file into `public/assets/...` and add its path to `AVAILABLE_ASSETS` in
-`app/assets.ts`. That is the only wiring needed.
+**2. Imagery.** All thirteen stills were generated and sit in the Runway
+library at app.runwayml.com, ready to download. They could not be written into
+this repo directly: Runway's CDN is blocked by the egress policy of the
+environment this was built in. Download them there, save them under
+`public/assets/...` using the filenames below, and add each path to
+`AVAILABLE_ASSETS` in `app/assets.ts`. That is the only wiring needed, and
+every placeholder is already the right shape so nothing shifts.
 
-Outstanding, thirteen generated stills:
+| File | Ratio | Status |
+|---|---|---|
+| `assets/hero.jpg` | 3:4 | Ready. Open courtyard, no arch in the image |
+| `assets/events/haldi.jpg` | 3:4 | Ready |
+| `assets/events/welcome-dinner.jpg` | 3:4 | Ready |
+| `assets/events/sehrabandi.jpg` | 3:4 | Ready |
+| `assets/events/baraat.jpg` | 3:4 | Ready |
+| `assets/events/pheras.jpg` | 3:4 | Ready |
+| `assets/events/soiree.jpg` | 3:4 | Ready |
+| `assets/stay.jpg` | 4:3 | Ready |
+| `assets/travel.jpg` | 4:3 | Ready |
+| `assets/closing.jpg` | 16:9 | Ready |
+| `assets/ornament/crest.png` | 1:1 | Usable. Carries an off centre dusty rose wash behind the gold crest |
+| `assets/ornament/peacock.png` | 1:1 | **Crop before use.** Trim the grey margin so only the cream sheet remains |
+| `assets/ornament/floral-column.png` | 9:16 | **Crop before use.** Keep only the central vertical floral band, roughly the middle fifth of the width; discard the taupe panel border |
 
-| File | Ratio |
-|---|---|
-| `assets/hero.jpg` | 3:4 |
-| `assets/events/haldi.jpg` | 3:4 |
-| `assets/events/welcome-dinner.jpg` | 3:4 |
-| `assets/events/sehrabandi.jpg` | 3:4 |
-| `assets/events/baraat.jpg` | 3:4 |
-| `assets/events/pheras.jpg` | 3:4 |
-| `assets/events/soiree.jpg` | 3:4 |
-| `assets/stay.jpg` | 4:3 |
-| `assets/travel.jpg` | 4:3 |
-| `assets/closing.jpg` | 16:9 |
-| `assets/ornament/floral-column.png` | 9:16 |
-| `assets/ornament/peacock.png` | 1:1 |
-| `assets/ornament/crest.png` | 1:1 |
+The two ornament crops matter because both are composited with
+`mix-blend-mode: multiply`. Cream multiplies away invisibly over the ivory
+page; the grey margin and the taupe border would not, and would show as the
+grey box edge to watch for. Each is a few seconds of work in any image editor.
 
-Plus `assets/logo.png` (the A K monogram, currently set in type), three
-`assets/couple/*.jpg` and two `assets/families/*.jpg`.
+Two generation notes, in case you re-roll anything. First, negative
+instructions do not work on this model: "do not include an archway" produced a
+large foreground archway, and "no frame, no scenery" produced a framed plate
+three times out of three. Describe what you want present instead, and describe
+the camera position rather than negating the object. Second, the ornament
+prompts are the ones that need this most, because the model's prior for
+"botanical plate" is a framed antique print.
 
-Ornament renders on flat cream with `mix-blend-mode: multiply`. Check no grey
-box edge shows once the real files are in.
+Still missing entirely: `assets/logo.png` (the A K monogram, currently set in
+type), three `assets/couple/*.jpg` and two `assets/families/*.jpg`. Those are
+deliberate. The brief forbids generating Arohi, Karan or any family member, so
+they need real photographs.
 
 **3. Copy awaiting the couple's own words.** The three story beats in
 `app/components/OurStory.tsx` (`I. How We Met`, `II. The Question`,
